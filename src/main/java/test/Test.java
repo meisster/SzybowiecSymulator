@@ -1,11 +1,13 @@
 package test;
 
 import model.Loader;
+import model.ModelTexture;
 import model.RawModel;
+import model.TextureModel;
 import org.lwjgl.opengl.Display;
 import render.DisplayManager;
 import render.RenderEngine;
-import shaders.StaticShader;
+import shaders.ShaderLoaderImpl;
 
 public class Test {
 
@@ -13,7 +15,7 @@ public class Test {
         DisplayManager.createDisplay();
         Loader loader = new Loader();
         RenderEngine renderEngine = new RenderEngine();
-        StaticShader shader = new StaticShader();
+        ShaderLoaderImpl shader = new ShaderLoaderImpl();
 
 
         float[] vertices = {
@@ -23,15 +25,24 @@ public class Test {
                 0.5f, 0.5f, 0f, //V3
         };
         int[] indices = {
-                0,1,3,
-                3,1,2
+                0, 1, 3,
+                3, 1, 2
+        };
+        float[] textureCoords = {
+                0,0,
+                0,1,
+                1,1,
+                1,0
         };
 
-        RawModel model = loader.loadToVAO(vertices, indices);
+        RawModel model = loader.loadToVAO(vertices, indices, textureCoords);
+        ModelTexture modelTexture = new ModelTexture(loader.loadTexture("square-texture"));
+        TextureModel textureModel = new TextureModel(model, modelTexture);
+
         while (!Display.isCloseRequested()) {
             renderEngine.prepare();
             shader.start();
-            renderEngine.render(model);
+            renderEngine.render(textureModel);
             shader.stop();
             // game logic
             // render geometry

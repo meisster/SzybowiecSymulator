@@ -5,13 +5,13 @@ import org.lwjgl.opengl.GL20;
 
 import java.io.*;
 
-public abstract class ShaderProgram {
+public abstract class ShaderLoader {
 
     private int programID;
     private int vertexShaderID;
     private int fragmentShaderID;
 
-    ShaderProgram(String vertexFile, String fragmentFile){
+    ShaderLoader(String vertexFile, String fragmentFile){
         vertexShaderID = loadShader(vertexFile, GL20.GL_VERTEX_SHADER);
         fragmentShaderID = loadShader(fragmentFile, GL20.GL_FRAGMENT_SHADER);
         programID = GL20.glCreateProgram();
@@ -29,7 +29,7 @@ public abstract class ShaderProgram {
         GL20.glUseProgram(0);
     }
 
-    protected void bindAttribute(int attribute, String variableName){
+    void bindAttribute(int attribute, String variableName){
         GL20.glBindAttribLocation(programID, attribute, variableName);
     }
 
