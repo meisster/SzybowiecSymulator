@@ -15,6 +15,7 @@ public class Test {
         RenderEngine renderEngine = new RenderEngine();
         StaticShader shader = new StaticShader();
 
+
         float[] vertices = {
                 -0.5f, 0.5f, 0f, //V0
                 -0.5f, -0.5f, 0f, //V1
@@ -29,11 +30,14 @@ public class Test {
         RawModel model = loader.loadToVAO(vertices, indices);
         while (!Display.isCloseRequested()) {
             renderEngine.prepare();
+            shader.start();
             renderEngine.render(model);
+            shader.stop();
             // game logic
             // render geometry
             DisplayManager.updateDisplay();
         }
+        shader.cleanUp();
         loader.cleanUp();
         DisplayManager.closeDisplay();
     }

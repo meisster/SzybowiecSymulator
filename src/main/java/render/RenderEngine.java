@@ -7,8 +7,8 @@ import org.lwjgl.opengl.GL30;
 
 public class RenderEngine {
     public void prepare(){
-        GL11.glClearColor(1, 0, 0, 1);
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+        GL11.glClearColor(0.258f, 0.647f, 0.9607f, 1);
     }
 
     public void render(RawModel model){
