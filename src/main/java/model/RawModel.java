@@ -1,5 +1,8 @@
 package model;
 
+import lombok.Getter;
+
+@Getter
 public class RawModel {
     private int vaoID;
     private int vertexCount;
@@ -9,11 +12,4 @@ public class RawModel {
         this.vertexCount = vertexCount;
     }
 
-    public int getVaoID() {
-        return vaoID;
-    }
-
-    public int getVertexCount() {
-        return vertexCount;
-    }
 }
