@@ -23,12 +23,13 @@ public class Entity {
         this.scale = scale;
     }
 
-    public void changeRotation(float x, float y, float z){
+    public void changeRotation(float x, float y, float z) {
         rotation.addRotationX(x);
         rotation.addRotationY(y);
         rotation.addRotationZ(z);
     }
-    public void changePosition(float x, float y, float z){
+
+    public void changePosition(float x, float y, float z) {
         this.position.x += x;
         this.position.y += y;
         this.position.z += z;

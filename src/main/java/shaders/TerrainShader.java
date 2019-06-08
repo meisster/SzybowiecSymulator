@@ -1,18 +1,8 @@
 package shaders;
 
-import entities.Camera;
-import entities.Light;
-import matrices.MatrixMath;
-import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector3f;
-
-import java.util.List;
-import java.util.stream.IntStream;
-
-public class TerrainShader extends Shader{
+public class TerrainShader extends Shader {
     private static final String VERTEX_FILE = "./src/main/resources/shaders/terrainVertexShader.glsl";
     private static final String FRAGMENT_FILE = "./src/main/resources/shaders/terrainFragmentShader.glsl";
-
 
 
     public TerrainShader() {
@@ -39,7 +29,7 @@ public class TerrainShader extends Shader{
     }
 
 
-    public void loadShineVariable(float damp, float reflect){
+    public void loadShineVariable(float damp, float reflect) {
         super.loadFloat(shineDamperLocation, damp);
         super.loadFloat(reflectivityLocation, reflect);
     }

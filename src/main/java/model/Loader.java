@@ -1,8 +1,6 @@
 package model;
 
-import lombok.Singular;
 import lombok.SneakyThrows;
-import model.RawModel;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.*;
 import org.newdawn.slick.opengl.Texture;
@@ -17,13 +15,12 @@ import java.util.List;
 
 public class Loader {
 
+    private static final Loader INSTANCE = new Loader();
     private List<Integer> vaoList = new ArrayList<>();
     private List<Integer> vboList = new ArrayList<>();
     private List<Integer> textureList = new ArrayList<>();
 
-    private static final Loader INSTANCE = new Loader();
-
-    public static Loader getInstance(){
+    public static Loader getInstance() {
         return INSTANCE;
     }
 
@@ -51,7 +48,7 @@ public class Loader {
         return vaoID;
     }
 
-    private void storeDataInAttributesList(int attributeNumber, int coordinateSize,  FloatBuffer data) {
+    private void storeDataInAttributesList(int attributeNumber, int coordinateSize, FloatBuffer data) {
         int vboID = GL15.glGenBuffers();
         vboList.add(vboID);
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboID);
@@ -68,14 +65,34 @@ public class Loader {
     public int loadTexture(String fileName) {
         Texture texture;
         texture = TextureLoader.getTexture("PNG", new FileInputStream("./src/main/resources/textures/"
-                                                                                  + fileName
-                                                                                  + ".png"));
+                                                                              + fileName
+                                                                              + ".png"));
+        return loadTexture(texture);
+
+    }
+
+    private int loadTexture(Texture texture) {
         GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
         GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, -1);
+        if (GLContext.getCapabilities().GL_EXT_texture_filter_anisotropic) {
+            float amount = Math.min(8f,
+                                    GL11.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
+            GL11.glTexParameterf(GL11.GL_TEXTURE_2D, EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT, amount);
+        }
         int textureID = texture.getTextureID();
         textureList.add(textureID);
         return textureID;
+    }
+
+    @SneakyThrows(IOException.class)
+    public int loadTextureFromJPG(String fileName) {
+        Texture texture;
+        texture = TextureLoader.getTexture("JPG",
+                                           new FileInputStream("./src/main/resources/textures/"
+                                                                       + fileName
+                                                                       + ".jpg"));
+        return loadTexture(texture);
     }
 
     private void bindIndicesBuffer(int[] indices) {

@@ -2,11 +2,8 @@ package entities;
 
 import lombok.Getter;
 import lombok.Setter;
-import matrices.Rotation;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector3f;
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL13.*;
 
 
 @Getter
@@ -40,20 +37,20 @@ public class Camera {
 
     private void calculatePitch() {
         //if (Mouse.isButtonDown(1)) {
-            float pitchChange = Mouse.getDY() * 0.1f;
-            //if(getPosition().getY() < 5){
-            //    if(pitch < 10) pitch += 0.2f;
-            //    if(pitch < 10 && getPosition().getY() == 0.5f) pitch = 10;
-            //    if (pitch - pitchChange > 10) pitch -= pitchChange;
-            //}
-            //else{pitch -= pitchChange;}
-            pitch -= pitchChange;
+        float pitchChange = Mouse.getDY() * 0.1f;
+        //if(getPosition().getY() < 5){
+        //    if(pitch < 10) pitch += 0.2f;
+        //    if(pitch < 10 && getPosition().getY() == 0.5f) pitch = 10;
+        //    if (pitch - pitchChange > 10) pitch -= pitchChange;
+        //}
+        //else{pitch -= pitchChange;}
+        pitch -= pitchChange;
     }
 
     private void calculateAngleAroundPlayer() {
         //if (Mouse.isButtonDown(0)) {
-            float angleChange = Mouse.getDX() * 0.3f;
-            angleAroundPlayer -= angleChange;
+        float angleChange = Mouse.getDX() * 0.3f;
+        angleAroundPlayer -= angleChange;
     }
 
     private float calculateHorizontalDistance() {

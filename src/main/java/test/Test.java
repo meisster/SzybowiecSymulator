@@ -4,8 +4,9 @@ import entities.Camera;
 import entities.Entity;
 import entities.Light;
 import entities.Plane;
-import matrices.Rotation;
-import model.*;
+import model.Loader;
+import model.ModelTexture;
+import model.TexturedModel;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector3f;
 import render.DisplayManager;
@@ -21,67 +22,59 @@ public class Test {
 
     public static void main(String[] args) {
         DisplayManager.createDisplay();
-        List<Light> lights= new ArrayList<>();
+        List<Light> lights = new ArrayList<>();
+        //Light up the screen with sun entity
         lights.add(Light.builder()
-                        .position(new Vector3f(3000,2000,2000))
-                        .colour(new Vector3f(1,1,1))
+                        .position(new Vector3f(3000, 2000, 2000))
+                        .colour(new Vector3f(1, 1, 1))
                         .build());
+        //Test point-light entity(blue colour)
         lights.add(Light.builder().position(new Vector3f(0, 1, 0))
-                        .colour(new Vector3f(2*0.258f, 2*0.647f, 2*0.9607f))
+                        .colour(new Vector3f(2 * 0.258f, 2 * 0.647f, 2 * 0.9607f))
                         .attenuation(new Vector3f(1, 0.01f, 0.002f))
                         .build());
 
-        Loader loader = new Loader();
+        //Create our default plane and initialize with basic settings
+        Plane plane = Plane.createDefaultPlane();
+        plane.getTexturedModel().getTexture().setSpecularMap("piper_specular").setShineDamper(20).setReflectivity(1f);
 
-        RawModel planeModel = OBJLoader.loadObj("piper", loader);
-        TexturedModel texturedPlaneModel = new TexturedModel(planeModel,
-                                                        new ModelTexture(loader.loadTexture("piper_diffuse")));
-        texturedPlaneModel.getTexture().setSpecularMap(loader.loadTexture("piper_specular"));
-        texturedPlaneModel.getTexture().setShineDamper(20);
-        texturedPlaneModel.getTexture().setReflectivity(0.7f);
-        Plane plane = new Plane(texturedPlaneModel,
-                                 new Vector3f(0, 0, 10),
-                                 new Rotation(0, 0, 0), 1);
-
+        //Set our camera to follow the plane entity(can put any entity)
         Camera camera = new Camera(plane);
 
-        ModelTexture terrainTextureModel = new ModelTexture(loader.loadTexture("terrain"));
-        terrainTextureModel.setReflectivity(0.05f);
-        terrainTextureModel.setShineDamper(5f);
-        List<Terrain> terrains = TerrainRenderer.createTerrain(
-                terrainTextureModel,
-                loader,
-                "terrain_height2");
+        //Create 4 grids of terrain
+        ModelTexture terrainTexture = new ModelTexture("terrain");
+        terrainTexture.setReflectivity(0.05f);
+        terrainTexture.setShineDamper(5f);
+        List<Terrain> terrains = TerrainRenderer.createTerrain(terrainTexture, "terrain_height2");
 
-        RawModel grass = OBJLoader.loadObj("fern", loader);
-        TexturedModel grassTextured = new TexturedModel(grass,
-                                                        new ModelTexture(loader.loadTexture("grassTexture")));
-        grassTextured.getTexture().setReflectivity(0);
-        List<Entity> grasses = EntityRenderer.createRandomObjects(grassTextured, terrains, 2500);
+        //Populate the terrain with fern/grass
+        TexturedModel fern = new TexturedModel("fern", "grassTexture");
+        fern.getTexture().setReflectivity(0);
+        List<Entity> grasses = EntityRenderer.createRandomObjects(fern, terrains, 5000);
 
-        RawModel tree3 = OBJLoader.loadObj("lowPolyTree", loader);
-        TexturedModel tree3TexturedModel = new TexturedModel(tree3,
-                                                             new ModelTexture(loader.loadTexture("lowPolyTree")));
+        //Populate with trees
+        TexturedModel tree3TexturedModel = new TexturedModel("lowPolyTree", "lowPolyTree");
         tree3TexturedModel.getTexture().setReflectivity(0);
         List<Entity> trees3 = EntityRenderer.createRandomObjects(tree3TexturedModel, terrains, 50);
 
-
         RenderEngine renderEngine = new RenderEngine();
         while (!Display.isCloseRequested()) {
+            //Update position of a plane and camera based on inputs
             plane.move();
             camera.move();
+            //Process our entities and terrain(map model-texture)
             grasses.forEach(renderEngine::processEntity);
-            //trees3.forEach(renderEngine::processEntity);
+            trees3.forEach(renderEngine::processEntity);
             terrains.forEach(renderEngine::processTerrain);
             renderEngine.processEntity(plane);
-
+            //Render our screen
             renderEngine.render(lights, camera);
             // game logic
             // render geometry
             DisplayManager.updateDisplay();
         }
         renderEngine.cleanUp();
-        loader.cleanUp();
+        Loader.getInstance().cleanUp();
         DisplayManager.closeDisplay();
     }
 

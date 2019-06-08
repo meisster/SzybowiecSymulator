@@ -1,12 +1,9 @@
 package render;
 
-import entities.Entity;
 import matrices.MatrixMath;
 import matrices.Rotation;
-import model.Loader;
 import model.ModelTexture;
 import model.RawModel;
-import model.TexturedModel;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
@@ -18,7 +15,6 @@ import terrain.Terrain;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class TerrainRenderer {
 
@@ -29,6 +25,16 @@ public class TerrainRenderer {
         shader.start();
         shader.loadProjectionMatrix(projectionMatrix);
         shader.stop();
+    }
+
+    public static List<Terrain> createTerrain(ModelTexture texture, String heightMap) {
+        List<Terrain> objects = new ArrayList<>();
+        objects.add(new Terrain(0, 0, texture, heightMap));
+        objects.add(new Terrain(-1, 0, texture, heightMap));
+        objects.add(new Terrain(-1, -1, texture, heightMap));
+        objects.add(new Terrain(0, -1, texture, heightMap));
+
+        return objects;
     }
 
     public void render(List<Terrain> terrains) {
@@ -60,16 +66,6 @@ public class TerrainRenderer {
     private void loadModelMatrix(Terrain terrain) {
         Matrix4f transformationMatrix = createTransformationMatrix(terrain);
         shader.loadTransformationMatrix(transformationMatrix);
-    }
-
-    public static List<Terrain> createTerrain(ModelTexture texture, Loader loader, String heightMap){
-        List<Terrain> objects = new ArrayList<>();
-        objects.add(new Terrain(0, 0, loader, texture, heightMap));
-        objects.add(new Terrain(-1, 0, loader, texture, heightMap));
-        objects.add(new Terrain(-1, -1, loader, texture, heightMap));
-        objects.add(new Terrain(0, -1, loader, texture, heightMap));
-
-        return objects;
     }
 
     private void bindModel(RawModel model) {

@@ -40,7 +40,16 @@ public class RenderEngine {
         terrainRenderer = new TerrainRenderer(terrainShader, projectionMatrix);
     }
 
-    public void render(List<Light> lights, Camera camera){
+    public static void enableCulling() {
+        GL11.glEnable(GL11.GL_CULL_FACE);
+        GL11.glCullFace(GL11.GL_BACK);
+    }
+
+    public static void disableCulling() {
+        GL11.glDisable(GL11.GL_CULL_FACE);
+    }
+
+    public void render(List<Light> lights, Camera camera) {
         prepare(); // clear color and depth buffer
         shader.start();
         shader.loadLights(lights); // load light to uniform variables
@@ -57,34 +66,27 @@ public class RenderEngine {
         terrains.clear();
         entities.clear();
     }
-    public void processTerrain(Terrain terrain){
+
+    public void processTerrain(Terrain terrain) {
         terrains.add(terrain);
     }
 
-    public void processEntity(Entity entity){
+    public void processEntity(Entity entity) {
         TexturedModel model = entity.getTexturedModel();
         List<Entity> batch = entities.get(model);
-        if(batch!=null){
-            batch.add(entity);
-        }else{
+        if (batch != null) batch.add(entity);
+        else {
             List<Entity> newBatch = new ArrayList<>();
             newBatch.add(entity);
             entities.put(model, newBatch);
         }
     }
 
-    public static void enableCulling(){
-        GL11.glEnable(GL11.GL_CULL_FACE);
-        GL11.glCullFace(GL11.GL_BACK);
-    }
-    public static void disableCulling(){
-        GL11.glDisable(GL11.GL_CULL_FACE);
-    }
-
-    public void cleanUp(){
+    public void cleanUp() {
         shader.cleanUp();
         terrainShader.cleanUp();
     }
+
     private void prepare() {
         GL11.glEnable(GL11.GL_DEPTH_TEST);
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);

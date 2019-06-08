@@ -18,7 +18,7 @@ uniform vec3 light_pos[4];
 void main(void){
     vec4 world_position = transformation_matrix * vec4(position, 1.0);
     gl_Position = projection_matrix * view_matrix * transformation_matrix * vec4(position, 1.0);
-    pass_texture_coords = texture_coords * 40.0;
+    pass_texture_coords = texture_coords * 20;
 
     surface_normal = (transformation_matrix * vec4(normal, 0.0)).xyz;
     for(int i=0; i<4; i++){

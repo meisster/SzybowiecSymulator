@@ -1,18 +1,18 @@
 package entities;
 
-import lombok.Builder;
 import matrices.Rotation;
 import model.TexturedModel;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector3f;
 import render.DisplayManager;
+import settings.Settings;
 
 public class Plane extends Entity {
 
-    private static final float FLY_SPEED = 30;
-    private static final float TURN_SPEED = 20;
+    private static final float FLY_SPEED = 50;
+    private static final float TURN_SPEED = 40;
     private static final float ACCELERATION = 5;
-    private static final float TURN_ACCELERATION = 30;
+    private static final float TURN_ACCELERATION = 40;
     private static final float DECELERATION = 2;
     private static final float BREAK = 8;
     private static final float PITCH_UP = 1.0f;
@@ -31,6 +31,13 @@ public class Plane extends Entity {
         super(texturedModel, position, rotation, scale);
     }
 
+    public static Plane createDefaultPlane() {
+        return new Plane(new TexturedModel(Settings.PLANE_MODEL, Settings.PLANE_TEXTURE),
+                         new Vector3f(0, 0, 10),
+                         new Rotation(0, 0, 0),
+                         1);
+    }
+
     public void move() {
         currentAcceleration = ACCELERATION + (getRotation().getXRotation() / 90) * GRAVITY;
         checkInputs();
@@ -42,7 +49,6 @@ public class Plane extends Entity {
         dx *= (1 - Math.abs((getRotation().getXRotation() / 90)));
         dz *= (1 - Math.abs((getRotation().getXRotation() / 90)));
         super.changePosition(dx, dy - pitch, dz);
-        //System.out.println("VELOCITY = " + currentSpeed + "\t TURN_VELOCITY: " + currentTurnSpeed);
     }
 
     private void checkInputs() {
@@ -86,21 +92,21 @@ public class Plane extends Entity {
         change = TURN_ACCELERATION * 1.8f * DisplayManager.getFrameTimeSeconds();
         if (this.currentTurnSpeed - change > 0 && currentTurnSpeed > 0) {
             this.currentTurnSpeed -= change;
-            if(inTheAir()){
+            if (inTheAir()) {
                 if (getRotation().getZRotation() > -90)
                     zRotation = 0.8f * getRotation().getZRotation() / (-90) + 0.2f;
                 if (getRotation().getZRotation() < -90) getRotation().setZRotation(-90);
             }
         } else if (this.currentTurnSpeed - change < 0 && currentTurnSpeed < 0) {
             this.currentTurnSpeed += change;
-            if(inTheAir()) {
+            if (inTheAir()) {
                 if (getRotation().getZRotation() < 90)
                     zRotation = -0.8f * getRotation().getZRotation() / 90 - 0.2f;
                 if (getRotation().getZRotation() > 90) getRotation().setZRotation(90);
             }
         } else {
             this.currentTurnSpeed = 0;
-            if(inTheAir()) {
+            if (inTheAir()) {
                 if (getRotation().getZRotation() > 0)
                     zRotation = -0.8f * getRotation().getZRotation() / 90 - 0.2f;
                 else if (getRotation().getZRotation() < 0)
@@ -125,7 +131,7 @@ public class Plane extends Entity {
         if (this.currentTurnSpeed > -TURN_SPEED) {
             this.currentTurnSpeed -= change;
         }
-        if(inTheAir()){
+        if (inTheAir()) {
             if (getRotation().getZRotation() < 90)
                 zRotation = -currentTurnSpeed / 40;
             else {
@@ -140,7 +146,7 @@ public class Plane extends Entity {
         if (this.currentTurnSpeed + change < TURN_SPEED) {
             this.currentTurnSpeed += change;
         }
-        if(inTheAir()){
+        if (inTheAir()) {
             if (getRotation().getZRotation() > -90) {
                 zRotation = -currentTurnSpeed / 40;
             } else {
