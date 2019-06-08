@@ -16,13 +16,15 @@ public class Rotation {
         this.zRotation = rotateZ;
     }
 
-    public void addRotationX(float dx){
+    public void addRotationX(float dx) {
         this.xRotation += dx;
     }
-    public void addRotationY(float dy){
+
+    public void addRotationY(float dy) {
         this.yRotation += dy;
     }
-    public void addRotationZ(float dz){
+
+    public void addRotationZ(float dz) {
         this.zRotation += dz;
     }
 }

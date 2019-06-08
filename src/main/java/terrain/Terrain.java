@@ -29,15 +29,15 @@ public class Terrain {
 
     private float[][] heights;
 
-    public Terrain(int gridX, int gridZ, Loader loader, ModelTexture texture, String heightMap) {
+    public Terrain(int gridX, int gridZ, ModelTexture texture, String heightMap) {
         this.texture = texture;
         this.x = gridX * SIZE;
         this.z = gridZ * SIZE;
-        this.model = generateTerrain(loader, heightMap);
+        this.model = generateTerrain(heightMap);
     }
 
     @SneakyThrows(IOException.class)
-    private RawModel generateTerrain(Loader loader, String heightMap) {
+    private RawModel generateTerrain(String heightMap) {
         BufferedImage image;
         image = ImageIO.read(new File("./src/main/resources/textures/" + heightMap + ".png"));
 
@@ -52,8 +52,9 @@ public class Terrain {
         for (int i = 0; i < VERTEX_COUNT; i++) {
             for (int j = 0; j < VERTEX_COUNT; j++) {
                 vertices[vertexPointer * 3] = (float) j / ((float) VERTEX_COUNT - 1) * SIZE;
-                vertices[vertexPointer * 3 + 1] = getHeight(j, i, image);
-                heights[i][j] = getHeight(j, i, image);
+                float height = getHeight(j, i, image);
+                heights[j][i] = height;
+                vertices[vertexPointer * 3 + 1] = height;
                 vertices[vertexPointer * 3 + 2] = (float) i / ((float) VERTEX_COUNT - 1) * SIZE;
                 Vector3f normal = calculateNormal(j, i, image);
                 normals[vertexPointer * 3] = normal.x;
@@ -80,10 +81,10 @@ public class Terrain {
             }
         }
 
-        return loader.loadToVAO(storeDataInFloatBuffer(vertices),
-                                storeDataInFloatBuffer(textureCoords),
-                                storeDataInFloatBuffer(normals),
-                                indices);
+        return Loader.getInstance().loadToVAO(storeDataInFloatBuffer(vertices),
+                                              storeDataInFloatBuffer(textureCoords),
+                                              storeDataInFloatBuffer(normals),
+                                              indices);
     }
 
     private FloatBuffer storeDataInFloatBuffer(float[] data) {
@@ -98,7 +99,7 @@ public class Terrain {
         float heightR = getHeight(x + 1, z, image);
         float heightD = getHeight(x, z - 1, image);
         float heightU = getHeight(x, z + 1, image);
-        Vector3f normal = new Vector3f(heightL - heightR, 2f*6f, heightD - heightU);
+        Vector3f normal = new Vector3f(heightL - heightR, 2f * 6f, heightD - heightU);
         normal.normalise();
         return normal;
     }
@@ -117,7 +118,7 @@ public class Terrain {
     public float getHeightOfPoint(float worldX, float worldZ) {
         float terrainX = worldX - x;
         float terrainZ = worldZ - z;
-        float gridSquareSize = SIZE / (float) heights.length - 1;
+        float gridSquareSize = SIZE / ((float) heights.length - 1);
         int gridX = (int) Math.floor(terrainX / gridSquareSize);
         int gridZ = (int) Math.floor(terrainZ / gridSquareSize);
         if (gridX >= heights.length - 1 || gridZ >= heights.length - 1 || gridX < 0 || gridZ < 0) {

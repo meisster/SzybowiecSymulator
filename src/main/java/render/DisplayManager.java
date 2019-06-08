@@ -18,8 +18,9 @@ public class DisplayManager {
         ContextAttribs attribs = new ContextAttribs(3, 2).withForwardCompatible(true).withProfileCore(true);
         try {
             Display.setDisplayMode(new DisplayMode(WIDTH, HEIGHT));
-            Display.create(new PixelFormat(), attribs);
+            Display.create(new PixelFormat().withSamples(16), attribs);
             Display.setTitle(TITLE);
+            GL11.glEnable(GL13.GL_MULTISAMPLE);
             Display.makeCurrent();
         } catch (LWJGLException e) {
             e.printStackTrace();
@@ -32,11 +33,11 @@ public class DisplayManager {
         Display.sync(FPS_CAP);
         Display.update();
         long currentFrameTime = getCurrentTime();
-        delta = (currentFrameTime - lastFrameTime)/1000f;
+        delta = (currentFrameTime - lastFrameTime) / 1000f;
         lastFrameTime = currentFrameTime;
     }
 
-    public static float getFrameTimeSeconds(){
+    public static float getFrameTimeSeconds() {
         return delta;
     }
 
@@ -44,7 +45,7 @@ public class DisplayManager {
         Display.destroy();
     }
 
-    private static long getCurrentTime(){
-        return Sys.getTime()*1000/Sys.getTimerResolution();
+    private static long getCurrentTime() {
+        return Sys.getTime() * 1000 / Sys.getTimerResolution();
     }
 }
