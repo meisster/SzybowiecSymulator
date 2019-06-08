@@ -94,17 +94,19 @@ public class EntityRenderer {
     public static List<Entity> createRandomObjects(TexturedModel texture, List<Terrain> terrains, int howMany){
         List<Entity> objects = new ArrayList<>();
         Random random = new Random();
-        for(int i = 0; i < howMany; i++){
-            Terrain terrain = null;
-            float x = random.nextFloat() * 1000 - 400;
-            float z = random.nextFloat() * 1000 - 400;
-            if(x < 0 && z < 0) terrain = terrains.get(2);
-            else if(x < 0 && z > 0) terrain = terrains.get(1);
-            else if(x > 0 && z < 0) terrain = terrains.get(3);
-            else if(x > 0 && z > 0) terrain = terrains.get(0);
-            float y = terrain.getHeightOfPoint(x, z);
-            if(y == 0)
-                objects.add(new Entity(texture, new Vector3f(x, y, z), new Rotation(0,0,0), 1));
+        for (Terrain terrain : terrains) {
+            for(int i =0; i< howMany/terrains.size(); i++){
+                float x = random.nextFloat() * 800;
+                float z = random.nextFloat() * 800;
+                float y = terrain.getHeightOfPoint(x,z);
+                if (y == 0) {
+                    objects.add(Entity.builder()
+                                      .position(new Vector3f(x,y,z))
+                                      .rotation(new Rotation(0,0,0))
+                                      .scale(1)
+                                      .build());
+                }
+            }
         }
         return objects;
     }

@@ -1,5 +1,8 @@
 package shaders;
 
+import entities.Camera;
+import entities.Light;
+import matrices.MatrixMath;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
@@ -8,13 +11,31 @@ import org.lwjgl.util.vector.Vector3f;
 
 import java.io.*;
 import java.nio.FloatBuffer;
+import java.util.List;
+import java.util.stream.IntStream;
 
 public abstract class Shader {
+
+    static final int MAX_LIGHTS = 4;
 
     private int programID;
     private int vertexShaderID;
     private int fragmentShaderID;
+
+
+    int transformationMatrixLocation;
+    int projectionMatrixLocation;
+    int viewMatrixLocation;
+    int[] lightPositionLocation;
+    int[] lightColourLocation;
+    int shineDamperLocation;
+    int reflectivityLocation;
+    int skyColourLocation;
+    int[] attenuationLocation;
+
+
     private static FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
+
 
     Shader(String vertexFile, String fragmentFile){
         vertexShaderID = loadShader(vertexFile, GL20.GL_VERTEX_SHADER);
@@ -26,6 +47,46 @@ public abstract class Shader {
         GL20.glLinkProgram(programID);
         GL20.glValidateProgram(programID);
         getAllUniformLocations();
+    }
+    void getLightsLocation(){
+        lightPositionLocation = new int[MAX_LIGHTS];
+        lightColourLocation = new int[MAX_LIGHTS];
+        attenuationLocation = new int[MAX_LIGHTS];
+        for(int i = 0; i<MAX_LIGHTS; i++){
+            lightPositionLocation[i] = getUniformLocation("light_pos[" + i + "]");
+            lightColourLocation[i] = getUniformLocation("light_col[" + i + "]");
+            attenuationLocation[i] = getUniformLocation("attenuation[" + i + "]");
+        }
+    }
+
+    public void loadLights(List<Light> lights) {
+        IntStream.range(0, MAX_LIGHTS).forEach(i -> {
+            if(i < lights.size()){
+                loadVector(lightPositionLocation[i], lights.get(i).getPosition());
+                loadVector(lightColourLocation[i], lights.get(i).getColour());
+                loadVector(attenuationLocation[i], lights.get(i).getAttenuation());
+            }
+            else{ // load empty light if not defined
+                loadVector(lightPositionLocation[i], new Vector3f(0,0,0));
+                loadVector(lightColourLocation[i], new Vector3f(0,0,0));
+                loadVector(attenuationLocation[i], new Vector3f(1,0,0));
+            }
+        });
+    }
+
+    public void loadTransformationMatrix(Matrix4f transformationMatrix){
+        loadMatrix(transformationMatrixLocation, transformationMatrix);
+    }
+
+    public void loadProjectionMatrix(Matrix4f projectionMatrix){
+        loadMatrix(projectionMatrixLocation, projectionMatrix);
+    }
+    public void loadViewMatrix(Camera camera) {
+        Matrix4f viewMatrix = MatrixMath.createViewMatrix(camera);
+        loadMatrix(viewMatrixLocation, viewMatrix);
+    }
+    public void loadSkyColour(float r, float g, float b) {
+        loadVector(skyColourLocation, new Vector3f(r, g, b));
     }
 
     public void start(){

@@ -1,5 +1,6 @@
 package entities;
 
+import lombok.Builder;
 import matrices.Rotation;
 import model.TexturedModel;
 import org.lwjgl.input.Keyboard;
@@ -152,11 +153,6 @@ public class Plane extends Entity {
     private void fallDown() {
         if (getPosition().y > 0.1f) {
             pitch = GRAVITY * DisplayManager.getFrameTimeSeconds();
-            if (getRotation().getXRotation() < 90) xRotation = (getRotation().getXRotation() / 90) * -0.8f;
-            else {
-                xRotation = 0;
-                getRotation().setXRotation(90);
-            }
         } else {
             pitch = 0;
             getPosition().setY(0);

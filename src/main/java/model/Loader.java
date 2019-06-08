@@ -1,5 +1,7 @@
 package model;
 
+import lombok.Singular;
+import lombok.SneakyThrows;
 import model.RawModel;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.*;
@@ -18,6 +20,13 @@ public class Loader {
     private List<Integer> vaoList = new ArrayList<>();
     private List<Integer> vboList = new ArrayList<>();
     private List<Integer> textureList = new ArrayList<>();
+
+    private static final Loader INSTANCE = new Loader();
+
+    public static Loader getInstance(){
+        return INSTANCE;
+    }
+
 
     public RawModel loadToVAO(FloatBuffer vertices, FloatBuffer texCoords, FloatBuffer normals, int[] indices) {
         int vaoID = createVAO();
@@ -55,18 +64,15 @@ public class Loader {
         GL30.glBindVertexArray(0);
     }
 
+    @SneakyThrows(IOException.class)
     public int loadTexture(String fileName) {
-        Texture texture = null;
-        try {
-            texture = TextureLoader.getTexture("PNG", new FileInputStream("./src/main/resources/textures/"
+        Texture texture;
+        texture = TextureLoader.getTexture("PNG", new FileInputStream("./src/main/resources/textures/"
                                                                                   + fileName
                                                                                   + ".png"));
-            GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
-            GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, -1);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR_MIPMAP_LINEAR);
+        GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, -1);
         int textureID = texture.getTextureID();
         textureList.add(textureID);
         return textureID;

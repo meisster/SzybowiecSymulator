@@ -1,6 +1,7 @@
 package terrain;
 
 import lombok.Getter;
+import lombok.SneakyThrows;
 import matrices.MatrixMath;
 import model.Loader;
 import model.ModelTexture;
@@ -17,8 +18,8 @@ import java.nio.FloatBuffer;
 
 @Getter
 public class Terrain {
-    private static final float SIZE = 800;
-    private static final float MAX_HEIGHT = 40;
+    public static final float SIZE = 800;
+    private static final float MAX_HEIGHT = 80;
     private static final float MAX_PIXEL_COLOR = 255 * 255 * 255;
 
     private float x;
@@ -35,13 +36,11 @@ public class Terrain {
         this.model = generateTerrain(loader, heightMap);
     }
 
+    @SneakyThrows(IOException.class)
     private RawModel generateTerrain(Loader loader, String heightMap) {
-        BufferedImage image = null;
-        try {
-            image = ImageIO.read(new File("./src/main/resources/textures/" + heightMap + ".png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        BufferedImage image;
+        image = ImageIO.read(new File("./src/main/resources/textures/" + heightMap + ".png"));
+
         int VERTEX_COUNT = image.getHeight();
         heights = new float[VERTEX_COUNT][VERTEX_COUNT];
         int count = VERTEX_COUNT * VERTEX_COUNT;
@@ -95,11 +94,11 @@ public class Terrain {
     }
 
     private Vector3f calculateNormal(int x, int z, BufferedImage image) {
-        float heightL = getHeight(x - z, z, image);
+        float heightL = getHeight(x - 1, z, image);
         float heightR = getHeight(x + 1, z, image);
         float heightD = getHeight(x, z - 1, image);
         float heightU = getHeight(x, z + 1, image);
-        Vector3f normal = new Vector3f(heightL - heightR, 2f, heightD - heightU);
+        Vector3f normal = new Vector3f(heightL - heightR, 2f*6f, heightD - heightU);
         normal.normalise();
         return normal;
     }

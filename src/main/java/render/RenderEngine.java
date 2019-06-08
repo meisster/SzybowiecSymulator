@@ -40,16 +40,18 @@ public class RenderEngine {
         terrainRenderer = new TerrainRenderer(terrainShader, projectionMatrix);
     }
 
-    public void render(Light light, Camera camera){
+    public void render(List<Light> lights, Camera camera){
         prepare(); // clear color and depth buffer
         shader.start();
-        shader.loadLight(light); // load light to uniform variables
+        shader.loadLights(lights); // load light to uniform variables
         shader.loadViewMatrix(camera);
+        shader.loadSkyColour(0.258f, 0.647f, 0.9607f);
         entityRenderer.render(entities);
         shader.stop();
         terrainShader.start();
-        terrainShader.loadLight(light);
+        terrainShader.loadLights(lights);
         terrainShader.loadViewMatrix(camera);
+        shader.loadSkyColour(0.258f, 0.647f, 0.9607f);
         terrainRenderer.render(terrains);
         terrainShader.stop();
         terrains.clear();

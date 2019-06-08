@@ -1,5 +1,6 @@
 package entities;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import matrices.Rotation;
@@ -8,6 +9,7 @@ import org.lwjgl.util.vector.Vector3f;
 
 @Getter
 @Setter
+@Builder
 public class Entity {
     private TexturedModel texturedModel;
     private Vector3f position;
