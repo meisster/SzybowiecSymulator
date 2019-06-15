@@ -65,8 +65,8 @@ public class Loader {
     public int loadTexture(String fileName) {
         Texture texture;
         texture = TextureLoader.getTexture("PNG", new FileInputStream("./src/main/resources/textures/"
-                                                                              + fileName
-                                                                              + ".png"));
+            + fileName
+            + ".png"));
         return loadTexture(texture);
 
     }
@@ -77,7 +77,7 @@ public class Loader {
         GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL14.GL_TEXTURE_LOD_BIAS, -1);
         if (GLContext.getCapabilities().GL_EXT_texture_filter_anisotropic) {
             float amount = Math.min(8f,
-                                    GL11.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
+                GL11.glGetFloat(EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
             GL11.glTexParameterf(GL11.GL_TEXTURE_2D, EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT, amount);
         }
         int textureID = texture.getTextureID();
@@ -89,9 +89,9 @@ public class Loader {
     public int loadTextureFromJPG(String fileName) {
         Texture texture;
         texture = TextureLoader.getTexture("JPG",
-                                           new FileInputStream("./src/main/resources/textures/"
-                                                                       + fileName
-                                                                       + ".jpg"));
+            new FileInputStream("./src/main/resources/textures/"
+                + fileName
+                + ".jpg"));
         return loadTexture(texture);
     }
 
