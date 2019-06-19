@@ -41,11 +41,11 @@ public class EntityRenderer {
                 float y = terrain.getHeightOfPoint(x, z);
                 if (y != 0) {
                     objects.add(Entity.builder()
-                                      .texturedModel(texture)
-                                      .position(new Vector3f(x, y, z))
-                                      .rotation(new Rotation(0, 0, 0))
-                                      .scale(1)
-                                      .build());
+                        .texturedModel(texture)
+                        .position(new Vector3f(x, y, z))
+                        .rotation(new Rotation(0, 0, 0))
+                        .scale(1)
+                        .build());
                 }
             }
             currentTerrain++;
@@ -55,8 +55,8 @@ public class EntityRenderer {
 
     private Matrix4f createTransformationMatrix(Entity entity) {
         return MatrixMath.createTransformationMatrix(entity.getPosition(), // calculate entity matrix
-                                                     entity.getRotation(),
-                                                     entity.getScale());
+            entity.getRotation(),
+            entity.getScale());
     }
 
     private void unbindModel() {
@@ -73,7 +73,7 @@ public class EntityRenderer {
             entities.get(model).forEach(entity -> {
                 prepareInstance(entity);
                 GL11.glDrawElements(GL11.GL_TRIANGLES, model.getRawModel().getVertexCount(),
-                                    GL11.GL_UNSIGNED_INT, 0);
+                    GL11.GL_UNSIGNED_INT, 0);
             });
             unbindModel();
         });
@@ -86,7 +86,7 @@ public class EntityRenderer {
         }
         shader.loadFakeLighting(model.getTexture().useFakeLighting());
         shader.loadShineVariable(model.getTexture().getShineDamper(),
-                                 model.getTexture().getReflectivity());
+            model.getTexture().getReflectivity());
         shader.loadUseSpecularMap(model.getTexture().hasSpecularMap());
         bindTextures(model);
         if (model.getTexture().hasSpecularMap()) {

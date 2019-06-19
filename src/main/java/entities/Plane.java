@@ -6,12 +6,13 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector3f;
 import render.DisplayManager;
 import settings.Settings;
+import terrain.Terrain;
 
 public class Plane extends Entity {
 
     private static final float FLY_SPEED = 50;
     private static final float TURN_SPEED = 40;
-    private static final float ACCELERATION = 5;
+    private static final float ACCELERATION = 15;
     private static final float TURN_ACCELERATION = 40;
     private static final float DECELERATION = 2;
     private static final float BREAK = 8;
@@ -33,12 +34,11 @@ public class Plane extends Entity {
 
     public static Plane createDefaultPlane() {
         return new Plane(new TexturedModel(Settings.PLANE_MODEL, Settings.PLANE_TEXTURE),
-                         new Vector3f(0, 0, 10),
-                         new Rotation(0, 0, 0),
-                         1);
+            new Vector3f(0, 0, 10),
+            new Rotation(0, 0, 0), 1);
     }
 
-    public void move() {
+    public void move(Terrain terrain) {
         currentAcceleration = ACCELERATION + (getRotation().getXRotation() / 90) * GRAVITY;
         checkInputs();
         super.changeRotation(xRotation, currentTurnSpeed * DisplayManager.getFrameTimeSeconds(), zRotation);
@@ -49,12 +49,18 @@ public class Plane extends Entity {
         dx *= (1 - Math.abs((getRotation().getXRotation() / 90)));
         dz *= (1 - Math.abs((getRotation().getXRotation() / 90)));
         super.changePosition(dx, dy - pitch, dz);
+        float currentHeight = terrain.getHeightOfPoint(super.getPosition().getX(), super.getPosition().getZ());
+        if (super.getPosition().getY() < currentHeight) {
+            float y = super.getPosition().getY();
+            changePosition(0, -y, 0);
+            changePosition(0, currentHeight, 0);
+        }
     }
 
     private void checkInputs() {
-        if (Keyboard.isKeyDown(Keyboard.KEY_W))
+        if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT))
             accelerate();
-        else if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
+        else if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
             if (this.currentSpeed > 0 || inTheAir())   //check if we need to stop
                 stop();
             else {   //now we're decelerating, so we need a lower speed increase
@@ -64,11 +70,11 @@ public class Plane extends Entity {
             applyInertia();
         }
         if ((currentSpeed > 20 && !inTheAir()) || inTheAir()) { //take-off when on the ground, steer while in the air
-            if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD8)) {
+            if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
                 if (getRotation().getXRotation() > -90)
                     xRotation = -0.5f;
                 if (getRotation().getXRotation() < -90) getRotation().setXRotation(-90);
-            } else if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD2)) {
+            } else if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
                 if (getRotation().getXRotation() < 90)
                     xRotation = 0.5f;
                 if (getRotation().getXRotation() > 90) getRotation().setXRotation(90);
@@ -223,5 +229,12 @@ public class Plane extends Entity {
                 this.currentSpeed = 0;
             }
         }
+    }
+
+    public int getCurrentQuarter() {
+        if (super.getPosition().getX() < 0 && super.getPosition().getZ() > 0) return 1;
+        else if (super.getPosition().getX() < 0 && super.getPosition().getZ() < 0) return 2;
+        else if (super.getPosition().getX() > 0 && super.getPosition().getZ() < 0) return 3;
+        else return 0;
     }
 }

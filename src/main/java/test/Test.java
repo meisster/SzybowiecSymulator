@@ -60,7 +60,7 @@ public class Test {
         RenderEngine renderEngine = new RenderEngine();
         while (!Display.isCloseRequested()) {
             //Update position of a plane and camera based on inputs
-            plane.move();
+            plane.move(terrains.get(plane.getCurrentQuarter()));
             camera.move();
             //Process our entities and terrain(map model-texture)
             grasses.forEach(renderEngine::processEntity);
